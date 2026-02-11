@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react"
-import axios from "axios"
+import api from "../api/axios"
 import ApplicationModal from "../components/ApplicationModal"
 
 function Dashboard() {
@@ -10,17 +10,7 @@ function Dashboard() {
 
   const fetchApplications = async () => {
     try {
-      const token = localStorage.getItem("token")
-
-      const response = await axios.get(
-        "http://localhost:8080/api/applications",
-        {
-          headers: {
-            Authorization: `Bearer ${token}`
-          }
-        }
-      )
-
+      const response = await api.get("/api/applications")
       setApplications(response.data.content)
     } catch (error) {
       console.log("Error fetching applications:", error)
@@ -120,7 +110,6 @@ function Dashboard() {
               </p>
 
               <div className="mt-5 flex justify-between items-center">
-
                 <span
                   className={`text-sm px-3 py-1 rounded-full ${getStatusColor(app.status)}`}
                 >
@@ -130,7 +119,6 @@ function Dashboard() {
                 <span className="text-xs text-gray-400">
                   {app.appliedDate}
                 </span>
-
               </div>
             </div>
           ))}
