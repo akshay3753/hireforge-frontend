@@ -2,8 +2,7 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Custom global styles */
 body {
-  @apply bg-dark text-white;
+  @apply bg-background text-white;
   font-family: 'Inter', sans-serif;
 }

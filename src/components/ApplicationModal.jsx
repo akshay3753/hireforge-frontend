@@ -1,59 +1,184 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import axios from "axios";
 
-export default function ApplicationModal({ isOpen, onClose, onCreate }) {
+export default function ApplicationModal({
+  isOpen,
+  onClose,
+  onCreate,
+  onUpdate,
+  initialData
+}) {
+
+  const [formData, setFormData] = useState({
+    companyName: "",
+    jobTitle: "",
+    status: "APPLIED",
+    appliedDate: "",
+    notes: ""
+  });
+
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    if (initialData) {
+      setFormData(initialData);
+    } else {
+      setFormData({
+        companyName: "",
+        jobTitle: "",
+        status: "APPLIED",
+        appliedDate: "",
+        notes: ""
+      });
+    }
+  }, [initialData]);
+
   if (!isOpen) return null;
 
+  const handleChange = (e) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value
+    });
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setError("");
+
+    try {
+      setSaving(true);
+      const token = localStorage.getItem("token");
+
+      if (initialData) {
+        const response = await axios.put(
+          `http://localhost:8080/api/applications/${initialData.id}`,
+          formData,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`
+            }
+          }
+        );
+
+        onUpdate(response.data);
+
+      } else {
+        const response = await axios.post(
+          "http://localhost:8080/api/applications",
+          formData,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`
+            }
+          }
+        );
+
+        onCreate(response.data);
+      }
+
+      onClose();
+
+    } catch (err) {
+      console.error(err);
+      setError("Operation failed.");
+    } finally {
+      setSaving(false);
+    }
+  };
+
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-white w-full max-w-lg rounded-2xl shadow-xl p-6">
-        <h2 className="text-xl font-semibold mb-4">Add Application</h2>
+    <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50">
+      <div className="bg-card text-white w-full max-w-lg rounded-2xl shadow-2xl p-8 border border-gray-800">
 
-        <form className="space-y-4">
+        <h2 className="text-2xl font-semibold mb-6">
+          {initialData ? "Edit Application" : "Add Application"}
+        </h2>
+
+        {error && (
+          <p className="text-red-400 text-sm mb-4">
+            {error}
+          </p>
+        )}
+
+        <form onSubmit={handleSubmit} className="space-y-5">
+
+          {/* Company */}
           <input
             type="text"
+            name="companyName"
             placeholder="Company"
-            className="w-full border rounded-lg p-2"
+            value={formData.companyName}
+            onChange={handleChange}
+            className="w-full bg-[#0f172a] text-white placeholder-gray-400 border border-gray-700 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-purple-600 transition"
+            required
           />
 
+          {/* Role */}
           <input
             type="text"
+            name="jobTitle"
             placeholder="Role"
-            className="w-full border rounded-lg p-2"
+            value={formData.jobTitle}
+            onChange={handleChange}
+            className="w-full bg-[#0f172a] text-white placeholder-gray-400 border border-gray-700 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-purple-600 transition"
+            required
           />
 
-          <select className="w-full border rounded-lg p-2">
-            <option>Applied</option>
-            <option>Interview</option>
-            <option>Offer</option>
-            <option>Rejected</option>
+          {/* Status */}
+          <select
+            name="status"
+            value={formData.status}
+            onChange={handleChange}
+            className="w-full bg-[#0f172a] text-white border border-gray-700 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-purple-600 transition"
+          >
+            <option value="APPLIED">Applied</option>
+            <option value="INTERVIEW">Interview</option>
+            <option value="OFFER">Offer</option>
+            <option value="REJECTED">Rejected</option>
           </select>
 
+          {/* Date */}
           <input
             type="date"
-            className="w-full border rounded-lg p-2"
+            name="appliedDate"
+            value={formData.appliedDate}
+            onChange={handleChange}
+            style={{ colorScheme: "dark" }}
+            className="w-full bg-[#0f172a] text-white border border-gray-700 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-purple-600 transition"
+            required
           />
 
+          {/* Notes */}
           <textarea
+            name="notes"
             placeholder="Notes"
-            className="w-full border rounded-lg p-2"
+            value={formData.notes}
+            onChange={handleChange}
+            rows={4}
+            className="w-full bg-[#0f172a] text-white placeholder-gray-400 border border-gray-700 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-purple-600 transition resize-none"
           />
 
-          <div className="flex justify-end gap-3 pt-2">
+          {/* Buttons */}
+          <div className="flex justify-end gap-4 pt-4">
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 rounded-lg bg-gray-200"
+              className="px-5 py-2 rounded-lg bg-gray-700 hover:bg-gray-600 transition"
             >
               Cancel
             </button>
 
             <button
               type="submit"
-              className="px-4 py-2 rounded-lg bg-black text-white"
+              disabled={saving}
+              className="px-5 py-2 rounded-lg bg-purple-600 hover:bg-purple-700 transition disabled:opacity-50"
             >
-              Save
+              {saving ? "Saving..." : "Save"}
             </button>
           </div>
+
         </form>
       </div>
     </div>
