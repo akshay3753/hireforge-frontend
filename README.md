@@ -1,49 +1,110 @@
-# Hireforge Frontend
+# HireForge — Frontend
 
-## Overview
+Live demo: https://hireforge-frontend.vercel.app/
 
-The Hireforge project is designed to revolutionize the hiring process, providing a streamlined and efficient platform for both employers and job seekers.
+## Project Overview
+HireForge is a job-application tracker. This repository contains the React + Vite + Tailwind frontend used to view, create, edit and delete job applications. The UI includes a protected admin layout (sidebar + topbar), Dashboard, Applications list and Analytics pages, and a modal to add/edit applications.
 
-## Features
-- **User Profiles**: Users can create and manage personalized profiles.
-- **Job Listings**: Employers can post job openings, and candidates can browse based on their preferences.
-- **Application Management**: Candidates can apply for jobs and track the status of their applications.
-- **Real-time Notifications**: Users receive updates for application statuses, new job postings, and messages.
-
-## Installation
-
-### Prerequisites
-- Node.js (v14 or higher)
-- npm (v6 or higher)
-
-### Setup
-1. Clone the repository:
-   ```bash
-   git clone https://github.com/akshay3753/hireforge-frontend.git
-   cd hireforge-frontend
-   ```
-2. Install dependencies:
-   ```bash
-   npm install
-   ```
-3. Start the development server:
-   ```bash
-   npm start
-   ```
-
-## Usage
-After starting the development server, navigate to `http://localhost:3000` in your browser to view the application.
-
-## Contributing
-We welcome contributions! Please read our [Contributing Guidelines](CONTRIBUTING.md) for more information on how to get involved.
-
-## License
-This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
-
-## Contact
-For inquiries, please reach out to [your-email@example.com].
+This frontend expects a backend REST API (Spring Boot) that exposes authentication and applications CRUD endpoints.
 
 ---
-## Acknowledgements
-- Thanks to all contributors and open-source libraries that made this project possible.
 
+## Quick Features
+- React + Vite app
+- Tailwind CSS for styling
+- Protected routes (JWT stored in `localStorage`)
+- Dashboard: summary cards, recent applications
+- Applications: list, edit, delete
+- Analytics: charts (recharts)
+- Modal-based application create/edit
+- Deployed to Vercel
+
+---
+
+## Environment / Required Variables
+Create a `.env` file at the project root (Vite uses `VITE_` prefix):
+
+```
+VITE_API_BASE_URL=http://localhost:8080/api
+```
+
+When deploying to Vercel set `VITE_API_BASE_URL` to your backend URL (e.g., `https://hireforge-backend.herokuapp.com/api` or your server URL).
+
+---
+
+## Local Development (Frontend)
+1. Install dependencies:
+```bash
+npm install
+# or
+pnpm install
+```
+
+2. Start dev server:
+```bash
+npm run dev
+```
+Open `http://localhost:5173`.
+
+3. Build for production:
+```bash
+npm run build
+```
+
+4. Preview production build locally:
+```bash
+npm run preview
+```
+
+---
+
+## Deployment (Vercel quick steps)
+1. Push repository to GitHub.
+2. On Vercel, create a new project and import the GitHub repo.
+3. Set environment variable `VITE_API_BASE_URL` to your backend API URL in Vercel project settings.
+4. Build command: `npm run build`
+5. Output directory: `dist`
+6. Deploy.
+
+---
+
+## Routes (client-side)
+- `/` — Home / Landing
+- `/login` — Login page (public)
+- `/dashboard` — Protected — main dashboard
+- `/applications` — Protected — full list and management
+- `/analytics` — Protected — charts
+
+---
+
+## Important Files / Folders
+- `src/App.jsx` — Router and route definitions
+- `src/layouts/MainLayout.jsx` — Sidebar + Topbar layout
+- `src/pages/Dashboard.jsx` — Dashboard UI
+- `src/pages/Applications.jsx` — Applications page
+- `src/pages/Analytics.jsx` — Analytics page (recharts)
+- `src/components/ApplicationModal.jsx` — Add/Edit modal form
+- `src/index.css` — Tailwind imports / base styles
+- `tailwind.config.js` — Tailwind config
+- `vite.config.js` — Vite config
+
+---
+
+## JWT & Auth Notes
+- The app stores JWT token returned by the login API in `localStorage` under the key `token`.
+- Protected routes use a `ProtectedRoute` wrapper that checks `localStorage.getItem('token')`.
+- API calls should include `Authorization: Bearer <token>` header.
+
+---
+
+
+
+## Troubleshooting
+- **Blank pages / CSS not applied** — ensure Tailwind build step ran and `index.css` is imported in `main.jsx` / `index.jsx`.
+- **403 from backend** — confirm CORS and JWT validation. Make sure backend `CorsConfiguration` allows the frontend origin (e.g., `https://hireforge-frontend.vercel.app`).
+- **Login redirects incorrectly** — check `App.jsx` routing logic and `ProtectedRoute` implementation.
+
+---
+
+
+---
