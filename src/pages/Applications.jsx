@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react"
-import axios from "axios"
+import api from "../api/axios"
 import ApplicationModal from "../components/ApplicationModal"
 
 function Applications() {
@@ -10,19 +10,8 @@ function Applications() {
 
   const fetchApplications = async () => {
     try {
-      const token = localStorage.getItem("token")
-
-      const response = await axios.get(
-        "http://localhost:8080/api/applications",
-        {
-          headers: {
-            Authorization: `Bearer ${token}`
-          }
-        }
-      )
-
+      const response = await api.get("/api/applications")
       setApplications(response.data.content)
-
     } catch (error) {
       console.log(error)
     } finally {
@@ -49,16 +38,7 @@ function Applications() {
   const handleDelete = async (id) => {
     if (!window.confirm("Delete this application?")) return
 
-    const token = localStorage.getItem("token")
-
-    await axios.delete(
-      `http://localhost:8080/api/applications/${id}`,
-      {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      }
-    )
+    await api.delete(`/api/applications/${id}`)
 
     setApplications(prev => prev.filter(app => app.id !== id))
   }
@@ -87,20 +67,11 @@ function Applications() {
       ) : (
         <div className="grid md:grid-cols-2 gap-6">
           {applications.map(app => (
-            <div
-              key={app.id}
-              className="bg-card p-6 rounded-xl shadow-lg"
-            >
-              <h3 className="text-lg font-semibold">
-                {app.companyName}
-              </h3>
-
-              <p className="text-gray-400 mt-1">
-                {app.jobTitle}
-              </p>
+            <div key={app.id} className="bg-card p-6 rounded-xl shadow-lg">
+              <h3 className="text-lg font-semibold">{app.companyName}</h3>
+              <p className="text-gray-400 mt-1">{app.jobTitle}</p>
 
               <div className="mt-4 flex justify-between items-center">
-
                 <span className="text-sm px-3 py-1 rounded-full bg-blue-600">
                   {app.status}
                 </span>
@@ -127,7 +98,6 @@ function Applications() {
                     Delete
                   </button>
                 </div>
-
               </div>
             </div>
           ))}
@@ -144,7 +114,6 @@ function Applications() {
         onUpdate={handleUpdate}
         initialData={editingApp}
       />
-
     </div>
   )
 }
