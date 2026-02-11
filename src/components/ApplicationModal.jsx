@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
-import axios from "axios";
+import api from "../api/axios"
+
 
 export default function ApplicationModal({
   isOpen,
@@ -65,15 +66,11 @@ export default function ApplicationModal({
         onUpdate(response.data);
 
       } else {
-        const response = await axios.post(
-          "http://localhost:8080/api/applications",
-          formData,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`
-            }
-          }
-        );
+          const response = await api.post(
+            "/api/applications",
+            formData
+          );
+
 
         onCreate(response.data);
       }
