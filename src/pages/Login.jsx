@@ -1,6 +1,6 @@
-import { useState } from "react"
+﻿import { useState } from "react"
 import { useNavigate } from "react-router-dom"
-import axios from "axios"
+import authService from "../api/authService" // Use the service we made!
 
 function Login() {
   const navigate = useNavigate()
@@ -14,41 +14,31 @@ function Login() {
     setError("")
 
     try {
-      const response = await axios.post(
-        "http://localhost:8080/api/auth/login",
-        { email, password }
-      )
-
-      localStorage.setItem("token", response.data)
+      // Use the authService logic which already uses the VITE_API_BASE_URL
+      await authService.login(email, password)
+      
+      // If login is successful, authService already saved the token to localStorage
       navigate("/dashboard")
 
     } catch (err) {
-      setError("Invalid email or password")
+      // Improved error message to catch specific backend responses
+      const errorMessage = err.response?.data?.error || "Invalid email or password";
+      setError(errorMessage)
     }
   }
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-[#0f172a] text-white">
-
       <div className="w-full max-w-md bg-card p-8 rounded-2xl shadow-xl border border-gray-800">
-
-        <h2 className="text-2xl font-bold mb-6 text-center">
-          Welcome Back
-        </h2>
-
+        <h2 className="text-2xl font-bold mb-6 text-center">Welcome Back</h2>
+        
         {error && (
-          <p className="text-red-500 text-sm mb-4 text-center">
-            {error}
-          </p>
+          <p className="text-red-500 text-sm mb-4 text-center">{error}</p>
         )}
 
         <form onSubmit={handleLogin} className="space-y-5">
-
           <div>
-            <label className="text-sm text-gray-400">
-              Email
-            </label>
-
+            <label className="text-sm text-gray-400">Email</label>
             <input
               type="email"
               value={email}
@@ -59,10 +49,7 @@ function Login() {
           </div>
 
           <div>
-            <label className="text-sm text-gray-400">
-              Password
-            </label>
-
+            <label className="text-sm text-gray-400">Password</label>
             <input
               type="password"
               value={password}
@@ -78,9 +65,7 @@ function Login() {
           >
             Login
           </button>
-
         </form>
-
       </div>
     </div>
   )
