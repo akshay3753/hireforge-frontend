@@ -50,17 +50,11 @@ export default function ApplicationModal({
 
     try {
       setSaving(true);
-      const token = localStorage.getItem("token");
 
       if (initialData) {
-        const response = await axios.put(
-          `http://localhost:8080/api/applications/${initialData.id}`,
-          formData,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`
-            }
-          }
+        const response = await api.put(
+          `/api/applications/${initialData.id}`,
+          formData
         );
 
         onUpdate(response.data);
@@ -131,9 +125,12 @@ export default function ApplicationModal({
             className="w-full bg-[#0f172a] text-white border border-gray-700 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-purple-600 transition"
           >
             <option value="APPLIED">Applied</option>
+            <option value="SCREENING">Screening</option>
             <option value="INTERVIEW">Interview</option>
             <option value="OFFER">Offer</option>
+            <option value="ACCEPTED">Accepted</option>
             <option value="REJECTED">Rejected</option>
+            <option value="WITHDRAWN">Withdrawn</option>
           </select>
 
           {/* Date */}

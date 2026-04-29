@@ -5,6 +5,7 @@ import Applications from "./pages/Applications"
 import Analytics from "./pages/Analytics"
 import Login from "./pages/Login"
 import Home from "./pages/Home"
+import Register from "./pages/Register"
 import ProtectedRoute from "./components/ProtectedRoute"
 
 function App() {
@@ -15,6 +16,7 @@ function App() {
         {/* Public */}
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
 
         {/* Protected */}
         <Route

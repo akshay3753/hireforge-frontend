@@ -11,7 +11,7 @@ function Dashboard() {
   const fetchApplications = async () => {
     try {
       const response = await api.get("/api/applications")
-      setApplications(response.data.content)
+      setApplications(response.data.content ?? [])
     } catch (error) {
       console.log("Error fetching applications:", error)
     } finally {
@@ -35,18 +35,24 @@ function Dashboard() {
     switch (status) {
       case "APPLIED":
         return "bg-blue-600"
+      case "SCREENING":
+        return "bg-cyan-600"
       case "INTERVIEW":
         return "bg-yellow-500 text-black"
       case "OFFER":
         return "bg-green-600"
+      case "ACCEPTED":
+        return "bg-emerald-600"
       case "REJECTED":
         return "bg-red-600"
+      case "WITHDRAWN":
+        return "bg-gray-600"
       default:
         return "bg-gray-600"
     }
   }
 
-  const formatStatus = (status) =>
+  const formatStatus = (status = "") =>
     status.charAt(0) + status.slice(1).toLowerCase()
 
   return (

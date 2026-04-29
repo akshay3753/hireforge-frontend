@@ -20,7 +20,7 @@ function Analytics() {
     const fetchData = async () => {
       try {
         const response = await api.get("/api/applications")
-        setApplications(response.data.content)
+        setApplications(response.data.content ?? [])
       } catch (error) {
         console.log("Error fetching analytics data:", error)
       } finally {
@@ -33,12 +33,15 @@ function Analytics() {
 
   const statusCounts = [
     { name: "Applied", value: applications.filter(a => a.status === "APPLIED").length },
+    { name: "Screening", value: applications.filter(a => a.status === "SCREENING").length },
     { name: "Interview", value: applications.filter(a => a.status === "INTERVIEW").length },
     { name: "Offer", value: applications.filter(a => a.status === "OFFER").length },
+    { name: "Accepted", value: applications.filter(a => a.status === "ACCEPTED").length },
     { name: "Rejected", value: applications.filter(a => a.status === "REJECTED").length },
+    { name: "Withdrawn", value: applications.filter(a => a.status === "WITHDRAWN").length },
   ]
 
-  const COLORS = ["#3b82f6", "#eab308", "#22c55e", "#ef4444"]
+  const COLORS = ["#3b82f6", "#0891b2", "#eab308", "#22c55e", "#059669", "#ef4444", "#4b5563"]
 
   if (loading) {
     return <div className="text-gray-400 text-center mt-20">Loading analytics...</div>

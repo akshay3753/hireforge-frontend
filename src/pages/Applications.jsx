@@ -11,7 +11,7 @@ function Applications() {
   const fetchApplications = async () => {
     try {
       const response = await api.get("/api/applications")
-      setApplications(response.data.content)
+      setApplications(response.data.content ?? [])
     } catch (error) {
       console.log(error)
     } finally {
@@ -38,10 +38,38 @@ function Applications() {
   const handleDelete = async (id) => {
     if (!window.confirm("Delete this application?")) return
 
-    await api.delete(`/api/applications/${id}`)
-
-    setApplications(prev => prev.filter(app => app.id !== id))
+    try {
+      await api.delete(`/api/applications/${id}`)
+      setApplications(prev => prev.filter(app => app.id !== id))
+    } catch (error) {
+      console.error(error)
+      alert("Delete failed")
+    }
   }
+
+  const getStatusColor = (status) => {
+    switch (status) {
+      case "APPLIED":
+        return "bg-blue-600"
+      case "SCREENING":
+        return "bg-cyan-600"
+      case "INTERVIEW":
+        return "bg-yellow-500 text-black"
+      case "OFFER":
+        return "bg-green-600"
+      case "ACCEPTED":
+        return "bg-emerald-600"
+      case "REJECTED":
+        return "bg-red-600"
+      case "WITHDRAWN":
+        return "bg-gray-600"
+      default:
+        return "bg-gray-600"
+    }
+  }
+
+  const formatStatus = (status = "") =>
+    status.charAt(0) + status.slice(1).toLowerCase()
 
   return (
     <div className="space-y-6">
@@ -72,8 +100,8 @@ function Applications() {
               <p className="text-gray-400 mt-1">{app.jobTitle}</p>
 
               <div className="mt-4 flex justify-between items-center">
-                <span className="text-sm px-3 py-1 rounded-full bg-blue-600">
-                  {app.status}
+                <span className={`text-sm px-3 py-1 rounded-full ${getStatusColor(app.status)}`}>
+                  {formatStatus(app.status)}
                 </span>
 
                 <div className="flex items-center gap-3">

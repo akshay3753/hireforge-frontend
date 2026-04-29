@@ -1,110 +1,131 @@
-# HireForge — Frontend
+# HireForge Frontend
+
+HireForge is a job application tracking dashboard built with React and Vite. The frontend provides authentication screens, a protected dashboard, application management, and analytics views backed by the HireForge Spring Boot API.
 
 Live demo: https://hireforge-frontend.vercel.app/
 
-## Project Overview
-HireForge is a job-application tracker. This repository contains the React + Vite + Tailwind frontend used to view, create, edit and delete job applications. The UI includes a protected admin layout (sidebar + topbar), Dashboard, Applications list and Analytics pages, and a modal to add/edit applications.
+## Screenshots
 
-This frontend expects a backend REST API (Spring Boot) that exposes authentication and applications CRUD endpoints.
+### Home
+![HireForge home page](docs/screenshots/home.png)
 
----
+### Login
+![HireForge login page](docs/screenshots/login.png)
 
-## Quick Features
-- React + Vite app
-- Tailwind CSS for styling
-- Protected routes (JWT stored in `localStorage`)
-- Dashboard: summary cards, recent applications
-- Applications: list, edit, delete
-- Analytics: charts (recharts)
-- Modal-based application create/edit
-- Deployed to Vercel
+### Register
+![HireForge register page](docs/screenshots/register.png)
 
----
+## Features
 
-## Environment / Required Variables
-Create a `.env` file at the project root (Vite uses `VITE_` prefix):
+- User registration and login with JWT-based session storage
+- Protected dashboard routes for authenticated users
+- Job application list with create, edit, and delete actions
+- Application status tracking: Applied, Screening, Interview, Offer, Accepted, Rejected, and Withdrawn
+- Analytics view using charts for status distribution
+- Axios API client with automatic bearer token headers
+- Responsive dark UI built with Tailwind CSS
+- Vercel rewrite support for React Router deep links
 
+## Tech Stack
+
+- React 19
+- Vite 7
+- React Router
+- Axios
+- Recharts
+- Tailwind CSS
+- ESLint
+- Vercel
+
+## Project Structure
+
+```text
+src/
+  api/                Axios client and auth service helpers
+  components/         Reusable UI such as protected route and modal
+  layouts/            Authenticated app layout
+  pages/              Home, Login, Register, Dashboard, Applications, Analytics
+  main.jsx            React app entry point
+  App.jsx             Route definitions
 ```
-VITE_API_BASE_URL=http://localhost:8080/api
+
+## How It Works
+
+The app stores the JWT returned from the backend login endpoint in `localStorage`. Protected pages are wrapped with `ProtectedRoute`, which redirects users without a token back to `/login`.
+
+All authenticated API requests go through `src/api/axios.js`. The Axios request interceptor reads the token and sends it as:
+
+```http
+Authorization: Bearer <token>
 ```
 
-When deploying to Vercel set `VITE_API_BASE_URL` to your backend URL (e.g., `https://hireforge-backend.herokuapp.com/api` or your server URL).
+The frontend expects the backend to expose these endpoints:
 
----
+- `POST /api/auth/register`
+- `POST /api/auth/login`
+- `GET /api/applications`
+- `POST /api/applications`
+- `PUT /api/applications/{id}`
+- `DELETE /api/applications/{id}`
 
-## Local Development (Frontend)
+## Local Setup
+
 1. Install dependencies:
+
 ```bash
 npm install
-# or
-pnpm install
 ```
 
-2. Start dev server:
+2. Create or update `.env`:
+
+```env
+VITE_API_BASE_URL=http://localhost:8080
+```
+
+3. Start the backend from the backend repository.
+
+4. Start the frontend:
+
 ```bash
 npm run dev
 ```
-Open `http://localhost:5173`.
 
-3. Build for production:
-```bash
-npm run build
+5. Open:
+
+```text
+http://127.0.0.1:5173
 ```
 
-4. Preview production build locally:
+## Available Scripts
+
 ```bash
-npm run preview
+npm run dev      # Start local development server
+npm run build    # Create production build
+npm run lint     # Run ESLint
+npm run preview  # Preview production build locally
 ```
 
----
+## Deployment Notes
 
-## Deployment (Vercel quick steps)
-1. Push repository to GitHub.
-2. On Vercel, create a new project and import the GitHub repo.
-3. Set environment variable `VITE_API_BASE_URL` to your backend API URL in Vercel project settings.
-4. Build command: `npm run build`
-5. Output directory: `dist`
-6. Deploy.
+For Vercel, set this environment variable in the Vercel project settings:
 
----
+```env
+VITE_API_BASE_URL=<your deployed backend URL>
+```
 
-## Routes (client-side)
-- `/` — Home / Landing
-- `/login` — Login page (public)
-- `/dashboard` — Protected — main dashboard
-- `/applications` — Protected — full list and management
-- `/analytics` — Protected — charts
-
----
-
-## Important Files / Folders
-- `src/App.jsx` — Router and route definitions
-- `src/layouts/MainLayout.jsx` — Sidebar + Topbar layout
-- `src/pages/Dashboard.jsx` — Dashboard UI
-- `src/pages/Applications.jsx` — Applications page
-- `src/pages/Analytics.jsx` — Analytics page (recharts)
-- `src/components/ApplicationModal.jsx` — Add/Edit modal form
-- `src/index.css` — Tailwind imports / base styles
-- `tailwind.config.js` — Tailwind config
-- `vite.config.js` — Vite config
-
----
-
-## JWT & Auth Notes
-- The app stores JWT token returned by the login API in `localStorage` under the key `token`.
-- Protected routes use a `ProtectedRoute` wrapper that checks `localStorage.getItem('token')`.
-- API calls should include `Authorization: Bearer <token>` header.
-
----
-
-
+The included `vercel.json` rewrites all routes to `/`, which allows React Router pages such as `/login`, `/register`, and `/dashboard` to work after refresh.
 
 ## Troubleshooting
-- **Blank pages / CSS not applied** — ensure Tailwind build step ran and `index.css` is imported in `main.jsx` / `index.jsx`.
-- **403 from backend** — confirm CORS and JWT validation. Make sure backend `CorsConfiguration` allows the frontend origin (e.g., `https://hireforge-frontend.vercel.app`).
-- **Login redirects incorrectly** — check `App.jsx` routing logic and `ProtectedRoute` implementation.
 
----
+- Blank page after refreshing a route: confirm `vercel.json` is deployed with the React Router rewrite.
+- API calls failing locally: confirm the backend is running on `http://localhost:8080` and `.env` has the correct `VITE_API_BASE_URL`.
+- Login succeeds but protected pages fail: clear old tokens from browser storage and log in again.
+- Production API errors: confirm the Vercel environment variable points to the deployed backend URL.
 
+## Development Approach
 
----
+This frontend was built as the client layer for a full-stack job tracking system. The flow started with route setup and authentication, then moved into protected dashboard screens, application CRUD operations, analytics, and deployment configuration. The API layer was centralized through Axios so all backend calls use the same base URL and token behavior.
+
+## Related Repository
+
+- Backend API: `hireforge-backend`
